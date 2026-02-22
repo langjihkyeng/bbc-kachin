@@ -3,73 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BBC Kachin News</title>
+    <title>BBC Kachin | Truth & Justice</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: #f0f2f5; }
-        header { background: #bb1919; color: white; padding: 20px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
-        .news-card { background: white; padding: 20px; margin-bottom: 15px; border-radius: 8px; border-left: 5px solid #bb1919; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        h2 { margin-top: 0; color: #333; }
-        p { color: #555; line-height: 1.6; }
+        :root { --main-red: #bb1919; --dark-gray: #333; --light-bg: #f4f4f4; }
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; background: var(--light-bg); color: var(--dark-gray); }
+        
+        /* Navigation */
+        nav { background: var(--main-red); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        nav h1 { margin: 0; font-size: 1.5rem; letter-spacing: 1px; }
+        .nav-links a { color: white; text-decoration: none; margin-left: 20px; font-weight: bold; font-size: 0.9rem; }
+
+        /* Hero Section */
+        .hero { background: white; padding: 40px 20px; text-align: center; border-bottom: 4px solid var(--main-red); margin-bottom: 30px; }
+        
+        /* News Grid */
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+        .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        
+        /* News Card */
+        .news-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: transform 0.2s; display: flex; flex-direction: column; }
+        .news-card:hover { transform: translateY(-5px); }
+        .card-content { padding: 20px; flex-grow: 1; }
+        .category-tag { background: var(--main-red); color: white; padding: 4px 10px; font-size: 0.7rem; text-transform: uppercase; border-radius: 4px; display: inline-block; margin-bottom: 10px; }
+        .news-card h2 { margin: 0 0 10px 0; font-size: 1.25rem; line-height: 1.3; color: #000; }
+        .news-card p { font-size: 0.95rem; line-height: 1.6; color: #555; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        
+        /* Footer */
+        footer { text-align: center; padding: 40px; margin-top: 50px; background: #222; color: #888; }
+        footer a { color: #888; text-decoration: none; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
-    <header>
+    <nav>
         <h1>BBC KACHIN</h1>
-    </header>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="signup.html">Sign Up</a>
+            <a href="admin.html" style="background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 4px;">Post News</a>
+        </div>
+    </nav>
 
-    <div class="container" id="news-list">
-        <p>Loading the latest news...</p>
+    <div class="hero">
+        <div class="container">
+            <h1>Latest Updates from Kachin State</h1>
+            <p>Independent journalism delivered directly to you.</p>
+        </div>
     </div>
 
-    <footer style="text-align: center; margin-top: 50px;">
-    <a href="admin.html" style="color: #999;">Author Login / Post News</a>
-</footer>
+    <div class="container">
+        <div class="news-grid" id="news-list">
+            <p>Fetching latest stories...</p>
+        </div>
+    </div>
 
-    
+    <footer>
+        <p>&copy; 2026 BBC Kachin. All rights reserved.</p>
+        <a href="admin.html">Staff Portal Login</a>
+    </footer>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // TODO: Replace the following with your app's Firebase project configuration
-       const firebaseConfig = {
-  apiKey: "AIzaSyB3cKEguln5V4qIcTfLlq43GI8vHM1zU1w",
-  authDomain: "bbc-kachin.firebaseapp.com",
-  projectId: "bbc-kachin",
-  storageBucket: "bbc-kachin.firebasestorage.app",
-  messagingSenderId: "756077088599",
-  appId: "1:756077088599:web:3337d83aec2d9d55baf812",
-  measurementId: "G-CHG283CPZC"
-};
-        // Initialize Firebase
+        // Your specific config
+        const firebaseConfig = {
+            apiKey: "AIzaSyB3cKEguln5V4qIcTfLlq43GI8vHM1zU1w",
+            authDomain: "bbc-kachin.firebaseapp.com",
+            projectId: "bbc-kachin",
+            storageBucket: "bbc-kachin.firebasestorage.app",
+            messagingSenderId: "756077088599",
+            appId: "1:756077088599:web:3337d83aec2d9d55baf812",
+            measurementId: "G-CHG283CPZC"
+        };
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Function to get news
         async function loadNews() {
             const newsContainer = document.getElementById('news-list');
             try {
-                const querySnapshot = await getDocs(collection(db, "articles"));
-                newsContainer.innerHTML = ""; // Clear the loading message
+                // Querying the "articles" collection, sorted by newest first
+                const q = query(collection(db, "articles"), orderBy("timestamp", "desc"));
+                const querySnapshot = await getDocs(q);
+                
+                newsContainer.innerHTML = ""; 
 
                 if (querySnapshot.empty) {
-                    newsContainer.innerHTML = "<p>No news articles found yet.</p>";
+                    newsContainer.innerHTML = "<p>No news stories are currently published.</p>";
+                    return;
                 }
 
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
-                    const articleHTML = `
+                    // Create news card HTML
+                    const card = `
                         <div class="news-card">
-                            <h2>${data.title}</h2>
-                            <p>${data.content}</p>
+                            <div class="card-content">
+                                <span class="category-tag">${data.category || 'General'}</span>
+                                <h2>${data.title}</h2>
+                                <p>${data.content}</p>
+                                <a href="#" style="color: var(--main-red); font-size: 0.8rem; font-weight: bold; text-decoration: none; display: block; margin-top: 10px;">READ FULL STORY →</a>
+                            </div>
                         </div>
                     `;
-                    newsContainer.innerHTML += articleHTML;
+                    newsContainer.innerHTML += card;
                 });
             } catch (error) {
-                console.error("Error loading news: ", error);
-                newsContainer.innerHTML = "<p>Error loading news. Check console.</p>";
+                console.error("Error:", error);
+                newsContainer.innerHTML = "<p>Failed to load news. Ensure your Firestore rules are set to 'allow read: if true;'</p>";
             }
         }
 
