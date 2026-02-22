@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin - Post News</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f4; padding: 20px; }
+        .form-container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        input, textarea, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { background: #bb1919; color: white; border: none; padding: 15px 20px; cursor: pointer; width: 100%; font-size: 16px; border-radius: 5px; }
+        button:hover { background: #991414; }
+        a { display: block; text-align: center; margin-top: 20px; color: #666; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Post New Article</h2>
+    <input type="text" id="title" placeholder="News Title" required>
+    <select id="category">
+        <option value="General">General</option>
+        <option value="Politics">Politics</option>
+        <option value="Social">Social</option>
+        <option value="Sports">Sports</option>
+    </select>
+    <textarea id="content" rows="10" placeholder="Write your news story here..." required></textarea>
+    <button onclick="publishNews()">Publish News</button>
+    <a href="index.html">← Back to Homepage</a>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // Your Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyB3cKEguln5V4qIcTfLlq43GI8vHM1zU1w",
+        authDomain: "bbc-kachin.firebaseapp.com",
+        projectId: "bbc-kachin",
+        appId: "1:756077088599:web:3337d83aec2d9d55baf812"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.publishNews = async () => {
+        const title = document.getElementById('title').value;
+        const category = document.getElementById('category').value;
+        const content = document.getElementById('content').value;
+
+        if(!title || !content) return alert("Please fill in all fields");
+
+        try {
+            await addDoc(collection(db, "articles"), {
+                title: title,
+                category: category,
+                content: content,
+                timestamp: serverTimestamp() // This sorts news by time automatically
+            });
+            alert("News Published Successfully!");
+            window.location.href = "index.html"; // Redirect to home to see the news
+        } catch (e) {
+            console.error("Error adding document: ", e);
+            alert("Error: " + e.message);
+        }
+    }
+</script>
+</body>
+</html>
