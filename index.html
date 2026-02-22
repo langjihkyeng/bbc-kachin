@@ -28,10 +28,15 @@
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         // TODO: Replace the following with your app's Firebase project configuration
-        const firebaseConfig = {
-            // PASTE YOUR CONFIG OBJECT HERE FROM FIREBASE CONSOLE
-        };
-
+       const firebaseConfig = {
+  apiKey: "AIzaSyB3cKEguln5V4qIcTfLlq43GI8vHM1zU1w",
+  authDomain: "bbc-kachin.firebaseapp.com",
+  projectId: "bbc-kachin",
+  storageBucket: "bbc-kachin.firebasestorage.app",
+  messagingSenderId: "756077088599",
+  appId: "1:756077088599:web:3337d83aec2d9d55baf812",
+  measurementId: "G-CHG283CPZC"
+};
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
