@@ -1,0 +1,32 @@
+<div id="auth-container">
+    <h2>Create Account</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="signUp()">Sign Up</button>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyB3cKEguln5V4qIcTfLlq43GI8vHM1zU1w",
+        authDomain: "bbc-kachin.firebaseapp.com",
+        projectId: "bbc-kachin",
+        appId: "1:756077088599:web:3337d83aec2d9d55baf812"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    window.signUp = () => {
+        const email = document.getElementById('email').value;
+        const pass = document.getElementById('password').value;
+        createUserWithEmailAndPassword(auth, email, pass)
+            .then((userCredential) => {
+                alert("Welcome! You are now signed up.");
+                window.location.href = "index.html"; // Send them back home
+            })
+            .catch((error) => alert(error.message));
+    };
+</script>
