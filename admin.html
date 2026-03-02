@@ -1,68 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Admin - Post News</title>
-    <style>
-        body { font-family: sans-serif; background: #f4f4f4; padding: 20px; }
-        .form-container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        input, textarea, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-        button { background: #bb1919; color: white; border: none; padding: 15px 20px; cursor: pointer; width: 100%; font-size: 16px; border-radius: 5px; }
-        button:hover { background: #991414; }
-        a { display: block; text-align: center; margin-top: 20px; color: #666; text-decoration: none; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BBC Kachin | Admin</title>
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; background: #f4f4f4; margin: 0; }
+    .container { max-width: 700px; margin: 6vh auto; background: #fff; border: 1px solid #e2e2e2; padding: 26px; }
+    h1 { margin-top: 0; }
+    input, textarea, select, button { width: 100%; box-sizing: border-box; padding: 12px; margin-top: 10px; }
+    button { border: none; background: #b80000; color: #fff; font-weight: 700; cursor: pointer; }
+    .row { display: grid; grid-template-columns: 1fr 170px; gap: 10px; }
+    a { margin-top: 16px; display: inline-block; color: #555; }
+    @media (max-width: 640px) { .row { grid-template-columns: 1fr; } }
+  </style>
 </head>
 <body>
-
-<div class="form-container">
-    <h2>Post New Article</h2>
-    <input type="text" id="title" placeholder="News Title" required>
-    <select id="category">
+  <main class="container">
+    <h1>Publish New Story</h1>
+    <p>Use this editor to post breaking updates and feature stories.</p>
+    <input type="text" id="title" placeholder="Headline" required />
+    <div class="row">
+      <select id="category">
         <option value="General">General</option>
         <option value="Politics">Politics</option>
         <option value="Social">Social</option>
         <option value="Sports">Sports</option>
-    </select>
-    <textarea id="content" rows="10" placeholder="Write your news story here..." required></textarea>
-    <button onclick="publishNews()">Publish News</button>
-    <a href="index.html">← Back to Homepage</a>
-</div>
+      </select>
+      <button onclick="publishNews()">Publish</button>
+    </div>
+    <textarea id="content" rows="12" placeholder="Write the full story here..." required></textarea>
+    <a href="index.html">← Back to homepage</a>
+  </main>
 
-<script type="module">
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // Your Configuration
     const firebaseConfig = {
-        apiKey: "AIzaSyB3cKEguln5V4qIcTfLlq43GI8vHM1zU1w",
-        authDomain: "bbc-kachin.firebaseapp.com",
-        projectId: "bbc-kachin",
-        appId: "1:756077088599:web:3337d83aec2d9d55baf812"
+      apiKey: "AIzaSyB3cKEguln5V4qIcTfLlq43GI8vHM1zU1w",
+      authDomain: "bbc-kachin.firebaseapp.com",
+      projectId: "bbc-kachin",
+      appId: "1:756077088599:web:3337d83aec2d9d55baf812"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
     window.publishNews = async () => {
-        const title = document.getElementById('title').value;
-        const category = document.getElementById('category').value;
-        const content = document.getElementById('content').value;
+      const title = document.getElementById('title').value.trim();
+      const category = document.getElementById('category').value;
+      const content = document.getElementById('content').value.trim();
 
-        if(!title || !content) return alert("Please fill in all fields");
+      if (!title || !content) {
+        alert('Please fill in all fields.');
+        return;
+      }
 
-        try {
-            await addDoc(collection(db, "articles"), {
-                title: title,
-                category: category,
-                content: content,
-                timestamp: serverTimestamp() // This sorts news by time automatically
-            });
-            alert("News Published Successfully!");
-            window.location.href = "index.html"; // Redirect to home to see the news
-        } catch (e) {
-            console.error("Error adding document: ", e);
-            alert("Error: " + e.message);
-        }
-    }
-</script>
+      try {
+        await addDoc(collection(db, 'articles'), {
+          title,
+          category,
+          content,
+          timestamp: serverTimestamp()
+        });
+        alert('Story published successfully!');
+        window.location.href = 'index.html';
+      } catch (e) {
+        console.error('Error adding document:', e);
+        alert(`Error: ${e.message}`);
+      }
+    };
+  </script>
 </body>
 </html>
